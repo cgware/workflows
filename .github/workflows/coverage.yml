@@ -1,0 +1,20 @@
+name: Coverage
+
+on:
+  workflow_call:
+
+jobs:
+  Coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare
+        run: sudo apt install lcov
+
+      - name: Make
+        run: make coverage ARCH=x64 CONFIG=Debug
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
