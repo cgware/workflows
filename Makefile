@@ -8,3 +8,7 @@ $(MAIN): main.c
 .PHONY: test
 test: $(MAIN)
 	@$(MAIN)
+
+.PHONY: coverage
+coverage: test
+	@lcov -q -c -d $(TOPDIR) -o $(TOPDIR)/bin/lcov.info
