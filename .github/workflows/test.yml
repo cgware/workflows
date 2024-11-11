@@ -1,0 +1,14 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'action.yml'
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: cgware/action-test/action.yml@main
