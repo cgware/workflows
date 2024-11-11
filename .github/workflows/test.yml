@@ -11,4 +11,4 @@ on:
 
 jobs:
   test:
-    uses: cgware/action-test/action.yml@main
+    uses: cgware/action-test/.github/workflows/action.yml@main
