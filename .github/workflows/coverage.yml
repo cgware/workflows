@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Prepare
-        run: sudo apt install lcov
+        run: sudo apt install gcc-multilib lcov
 
       - name: Make
         run: make coverage ARCH=x64 CONFIG=Debug
