@@ -68,4 +68,5 @@ jobs:
         run: cmake --build build --target run_tests --config ${{ matrix.conf }}
 
       - name: Log
+        if: always()
         run: cat build/Testing/Temporary/LastTest.log
