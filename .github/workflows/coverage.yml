@@ -12,8 +12,8 @@ jobs:
 
       - name: Prepare
         run: |
-          sudo apt update
-          sudo apt install gcc-multilib lcov -y
+          sudo apt-get update
+          sudo apt-get install gcc-multilib lcov -y
 
       - name: Make
         run: make coverage ARCH=x64 CONFIG=Debug
