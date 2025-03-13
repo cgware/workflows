@@ -44,6 +44,7 @@ jobs:
         run: cmake --build build --target test --config ${{ matrix.conf }}
 
       - name: Log
+        if: always()
         run: cat build/Testing/Temporary/LastTest.log
 
   Windows-CMake:
