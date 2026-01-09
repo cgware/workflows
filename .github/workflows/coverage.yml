@@ -4,19 +4,27 @@ on:
   workflow_call:
 
 jobs:
-  Coverage:
+  coverage:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download --repo cgware/build latest --pattern "build-linux-x64.zip"
+          unzip "build-linux-x64.zip" -d bin
+
       - name: Prepare
         run: |
+          chmod +x ./bin/build-linux-x64/build
           sudo apt-get update
           sudo apt-get install gcc-multilib lcov -y
 
-      - name: Make
-        run: make coverage ARCH=x64 CONFIG=Debug
+      - name: Run
+        run: ./bin/build-linux-x64/build -g M -a "host" -c "Debug" -t "cov" -O 0
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2

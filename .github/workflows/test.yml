@@ -4,70 +4,59 @@ on:
   workflow_call:
 
 jobs:
-  Ubuntu-Make:
+  test-linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        conf: [Debug, Release]
-        arch: [x64, x86]
+        gen: [M, C]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Prepare
+      - name: Download
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sudo apt-get update
-          sudo apt-get install gcc-multilib
-
-      - name: Make
-        run: make test CONFIG=${{ matrix.conf }} ARCH=${{ matrix.arch }}
-
-  Ubuntu-CMake:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        conf: [Debug, Release]
-        arch: [x64, x86]
-
-    steps:
-      - uses: actions/checkout@v4
+          gh release download --repo cgware/build latest --pattern "build-linux-x64.zip"
+          unzip "build-linux-x64.zip" -d bin
 
       - name: Prepare
         run: |
+          chmod +x ./bin/build-linux-x64/build
           sudo apt-get update
-          sudo apt-get install gcc-multilib
+          sudo apt-get install gcc-multilib lcov -y
 
-      - name: Build
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.conf }} -DARCH=${{ matrix.arch }}
-
-      - name: Run
-        run: cmake --build build --target test --config ${{ matrix.conf }}
+      - name: Test
+        run: ./bin/build-linux-x64/build -g ${{ matrix.gen }} -a "x64 x86" -c "Debug Release" -t "all test" -O 0
 
       - name: Log
-        if: always()
-        run: cat build/Testing/Temporary/LastTest.log
+        if: matrix.gen == 'C'
+        run: |
+          cat build/Testing/Temporary/LastTest.log
+          cat build/x64-Debug/Testing/Temporary/LastTest.log
+          cat build/x64-Release/Testing/Temporary/LastTest.log
+          cat build/x86-Debug/Testing/Temporary/LastTest.log
+          cat build/x86-Release/Testing/Temporary/LastTest.log
 
-  Windows-CMake:
+  test-windows:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        conf: [Debug, Release]
-        arch: [x64, x86]
-        include:
-          - arch: x64
-            warch: x64
-          - arch: x86
-            warch: Win32
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build
-        run: cmake -S . -B build -A ${{ matrix.warch }} -DCMAKE_BUILD_TYPE=${{ matrix.conf }} -DARCH=${{ matrix.arch }}
+      - name: Download
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download --repo cgware/build latest --pattern "build-windows-x64.zip"
+          unzip "build-windows-x64.zip" -d bin
 
-      - name: Run
-        run: cmake --build build --target run_tests --config ${{ matrix.conf }}
+      - name: Test
+        run: ./bin/build-windows-x64/build -a "x64 x86" -c "Debug Release" -t "all test" -O 0
 
       - name: Log
         if: always()
-        run: cat build/Testing/Temporary/LastTest.log
+        run: |
+          cat build/Testing/Temporary/LastTest.log
+          cat build/x64/Testing/Temporary/LastTest.log
+          cat build/x86/Testing/Temporary/LastTest.log
