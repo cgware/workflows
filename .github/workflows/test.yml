@@ -56,6 +56,9 @@ jobs:
         with:
           vs-version: '17.14'
 
+      - name: List generators
+        run: cmake --help
+
       - name: Test
         run: ./bin/build-windows-x64/build -a "x64 x86" -c "Debug Release" -t "all test" -O 0
 
