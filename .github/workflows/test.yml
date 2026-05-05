@@ -54,7 +54,7 @@ jobs:
       - name: Prepare
         uses: microsoft/setup-msbuild@v3
         with:
-          vs-version: '15.9'
+          vs-version: '17.14'
 
       - name: Test
         run: ./bin/build-windows-x64/build -a "x64 x86" -c "Debug Release" -t "all test" -O 0
